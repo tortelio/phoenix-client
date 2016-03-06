@@ -1,0 +1,14 @@
+{
+  "name": "phoenix-client",
+  "description": "phoenix",
+  "main": "",
+  "authors": [
+    "\"Torteli Oliver Mate oliver@cursorinsight.com\""
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "devDependencies": {
+    "mithril": "^0.2.1"
+  }
+}
