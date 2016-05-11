@@ -1,31 +1,25 @@
+import m from 'mithril'
 
-class User{
-  constructor(name = m.prop("")) {
-    this.name = name;
+import Component from '../component'
+
+class Index extends Component {
+  init (ctrl) {
+    let props = this.props
+    ctrl.session = props.session
+
+    ctrl.user = {name: m.prop('')}
+    ctrl.login = function (e) {
+      ctrl.session.login(ctrl.user)
+        .then((user) => m.route(`/users/${user.id}`))
+    }
+  }
+
+  view (ctrl) {
+    return [
+      m('input', {value: ctrl.user.name(), onchange: m.withAttr('value', ctrl.user.name)}),
+      m('button', {onclick: ctrl.login}, 'Log in')
+    ]
   }
 }
-
-let Index = {
-  init(wsh) {
-    this.wsh = wsh;
-  }
-};
-
-Index.controller = function() {
-  let user = new User();
-  return {
-    user,
-    login(e) {
-      console.log(user.name());
-    }
-  };
-};
-
-Index.view = function(ctrl) {
-  return [
-    m("input", {value: ctrl.user.name(), onchange: m.withAttr("value", ctrl.user.name)}),
-    m("button", {onclick: e => ctrl.login(e)}, "Log in")
-  ];
-};
 
 export default Index

@@ -1,12 +1,6 @@
-import Phoenix from "./phoenix"
+import Phoenix from './phoenix'
 
-let url = "ws://0.0.0.0:8080/websocket";
+let url = 'ws://localhost:8888/websocket'
+let element = document.getElementById('application')
 
-var Application = new Phoenix(url),
-    ApplicationElement = document.getElementById("application");
-
-m.route.mode = "hash";
-m.route(ApplicationElement, "/", {
-  "/": Application.index,
-  "/users/:userId": Application.users
-});
+document.Application = new Phoenix(url, element)
