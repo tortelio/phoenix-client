@@ -12,15 +12,27 @@ class SessionHandler {
     this.store = new Store()
   }
 
-  registerUser (user) {
-    this.setUser(user)
-    Cookies.setCookie('PhUser', user.id)
+  registerUser (userId) {
+    let user = this.setUser({id: userId})
+    Cookies.setCookie('PhUser', userId)
     return user
   }
+
+  throwError(error) {  throw error; return error }
+
+  signupErrors () { return ['already_registered'] }
+
+  signup (user) {
+    return communication.signup(user)
+      .then((response) => this.signupErrors().indexOf(response) >= 0 ? this.throwError(response) : this.registerUser(response))
+  }
+
+  loginErrors () { return ['not_registered', 'bad_password'] }
+
   // NOTE this is neccessary cuz of scoping
   login (user) {
     return communication.login(user)
-      .then((user) => this.registerUser(user))
+      .then((response) => this.loginErrors().indexOf(response) >= 0 ? this.throwError(response) : this.registerUser(response))
   }
 
   logout () {
@@ -41,6 +53,10 @@ class SessionHandler {
     return item
   }
 
+  removeItem (itemId) {
+    this.store.user().items.delete(itemId)
+  }
+
   getUserData () {
     let user = {id: Cookies.getCookie('PhUser')}
 
@@ -56,7 +72,12 @@ class SessionHandler {
 
   updateItem (item) {
     return communication.updateItem(item)
-      .then((item) => this.setItem(item))
+      .then((itemId) => this.setItem(itemId))
+  }
+
+  deleteItem (item) {
+    return communication.deleteItem(item)
+      .then((itemId) => this.removeItem(itemId))
   }
 }
 

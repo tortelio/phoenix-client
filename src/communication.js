@@ -9,14 +9,9 @@ class Communication {
     return obj.value
   }
 
-  reqAndRes (type, data) {
+  req (type, data) {
     return this.wsh.sendForResponse(this.encode(type, data))
       .then((res) => this.decode(res))
-  }
-
-  // TODO
-  req (type, data) {
-    return this.wsh.send(this.encode(type, data))
   }
 
   constructor (url) {
@@ -24,19 +19,27 @@ class Communication {
   }
 
   login (user) {
-    return this.reqAndRes('login', user)
+    return this.req('log_in', user)
+  }
+
+  signup (user) {
+    return this.req('sign_up', user)
   }
 
   getUserData (user) {
-    return this.reqAndRes('get_user_data', user)
+    return this.req('get_user_data', user)
   }
 
   addItem (item) {
-    return this.reqAndRes('add_item', item)
+    return this.req('add_item', item)
   }
 
   updateItem (item) {
-    return this.reqAndRes('update_item', item)
+    return this.req('update_item', item)
+  }
+
+  deleteItem (item) {
+    return this.req('delete_item', item.id)
   }
 }
 

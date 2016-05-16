@@ -10,23 +10,32 @@ class User extends Component {
 
     ctrl.items = m.prop([])
 
+    let generateInputItem = function (item) {
+      var submit = function (event) {
+        item.details.description = this.details.description()
+        item.details.done = this.details.done()
+
+        ctrl.session.updateItem(item)
+      }
+
+      ctrl.items().push(new Item({
+        user: ctrl.session.store.user().id,
+        details: item.details,
+        delete: function (event) {
+          ctrl.session.deleteItem(item)
+            .then(function () {
+              // TODO redraw !!
+              m.redraw()
+            })
+        },
+        button: 'Save',
+        submit: submit
+      }).instance())
+    }
+
     ctrl.session.getUserData()
       .then(function (user) {
-        user.items.forEach(function (item) {
-          var submit = function (event) {
-            item.details.description = this.details.description()
-            item.details.done = this.details.done()
-
-            ctrl.session.updateItem(item)
-          }
-
-          ctrl.items().push(new Item({
-            user: ctrl.session.store.user().id,
-            details: item.details,
-            button: 'Save',
-            submit: submit
-          }).instance())
-        })
+        user.items.forEach(generateInputItem)
 
         m.redraw()
       })
@@ -40,6 +49,10 @@ class User extends Component {
         }
 
         ctrl.session.addItem(this.user().id, details)
+          .then((item) => (function (item) {
+            generateInputItem(item)
+            return item
+          }).apply(this, [item]))
           .then((_) => this.reset())
           .then((_) => m.redraw())
       }
@@ -53,10 +66,16 @@ class User extends Component {
 
   view (ctrl) {
     return [
-      ctrl.session.store.user().name,
-      m('button', {onclick: ctrl.logout}, 'Log Out'),
-      ctrl.newItem.render(),
-      ctrl.items().map((item) => item.render())
+      m('div.full.table', [
+        m('navbar.navbar', [
+          ctrl.session.store.user().name,
+          m('button', {onclick: ctrl.logout}, 'Log Out')
+        ]),
+        m('div.user-container', [
+          ctrl.newItem.render(),
+          ctrl.items().map((item) => item.render())
+        ])
+      ])
     ]
   }
 }
